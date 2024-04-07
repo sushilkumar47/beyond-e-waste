@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Fontawesome -->
+    <script
+      src="https://kit.fontawesome.com/42a182743f.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/form.css" />
+    <title>E-waste-collection Request</title>
+  </head>
+  <body>
+    <%-include("../partials/navbar.ejs")%>
+    <div class="form-container">
+      <!-- icon -->
+      <h1>
+        Schedule E-Waste collection Request
+
+        <!-- add icon -->
+        <i class="fas fa-plus"></i>
+      </h1>
+      <%if(error){%>
+        <small class="error">
+        <small class="error">
+          <i class="fas fa-exclamation-circle"></i>
+          <%=error%>
+        </small> 
+      <%}%>
+      <form encrypt="multipart/form-data" action="/api/v1/request/request" method="POST">
+        <!-- Post Title -->
+        <!-- <div class="input-wrapper">
+          <label for="fullname">full Name</label>
+          <input type="text" name="fullname" id="name" />
+         
+        </div> -->
+        <div class="input-wrapper">
+          <label for="phone">Phone number</label>
+          <input type="phone" name="phone" id="name" />
+          <!-- err -->
+        </div>
+        <!-- Category -->
+        <div class="input-wrapper">
+          <label for="items">E-waste items to be donated
+          </label>
+          <select name="items" id="category">
+            <option value="Computer">Computer</option>
+            <option value="Laptop">Laptop</option>
+            <option value="Printer">Printer</option>
+            <option value="Mobile">Mobile</option>
+            <option value="TV">TV</option>
+            <option value="Refrigerator">Refrigerator</option>
+            <option value="Washing Machine">Washing Machine</option>
+            <option value="Camera">Camera</option>
+            <option value="Mix E waste">Mix E waste</option>
+            <option value="other">other</option>
+          </select>
+          <!-- err -->
+        </div>
+        <div class="input-wrapper">
+          <!-- Post Body -->
+          <label for="address">Address</label>
+          <textarea name="address" id="body" cols="30" rows="10"></textarea>
+          <!-- err -->
+        </div>
+
+        <div class="input-wrapper">
+          <label for="pincode">pin code</label>
+          <input type="number" name="pincode" id="name" />
+        </div>
+
+        <div class="input-wrapper">
+          <label for="weight">Weight of item</label>
+          <select name="weight" id="category">
+            <option value="less than 7kg">less than 7kg</option>
+            <option value="less than 20kg">less than 20kg</option>
+            <option value="20-50kg">20-50kg</option>
+            <option value="50-100kg">50-100kg</option>
+            <option value="above 100kg">above 100kg</option>
+          </select>
+        </div>
+        
+        <div class="input-wrapper">
+        <label for="date">Collection Date</label>
+        <input type="date" id="date" name="date">
+       </div>
+       <p style="color:greenyellow; text-align: center;">collection time 12pm to 5pm be present at your place</p>
+        <button type="submit">Schedule</button>
+      </form>
+    </div>
+    <%-include("../partials/footer.ejs")%>
+  </body>
+</html>

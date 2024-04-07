@@ -5,14 +5,18 @@ const registerCtrl=async(req,res,next)=>{
     const{fullname,email,password}=req.body;
     //check if field is empty
     if(!fullname || !email || !password){
-        return next(appErr("all field are required"));
+        return res.render("users/register",{
+            error:"all field are required",
+        })
     }
     try{
         //1.check if user exit(email)
         const userFound=await User.findOne({email});
         //throw an error
         if(userFound){
-            return next(appErr('user already exit'))
+            return res.render("users/register",{
+                error:"user already exit",
+            })
         }
         //hash password
         const salt = await bcrypt.genSalt(10);
@@ -23,20 +27,19 @@ const registerCtrl=async(req,res,next)=>{
             email,
             password:hashedPassword,
         });
-        res.json({
-            status:"success",
-            data:user,
-        });
-
+        //redireact
+        res.redirect("/api/v1/users/login")
     }catch(error){
-        res.json(error);
+        res.json(error); 
     }
 }
 
 const loginCtrl=async(req,res,next)=> {
     const{email,password}=req.body;
     if(!email || !password){
-        return next(appErr("Email and password fields are required"));
+        return res.render("users/login",{  
+            error:"email and password are required",
+          })
     }
 
     try{
@@ -44,19 +47,21 @@ const loginCtrl=async(req,res,next)=> {
         const userFound=await User.findOne({ email });
         if(!userFound){
             //throw error
-                return next(appErr("invalid login credentials"))
+            return res.render("users/login",{
+                error:"invalid login credentials",
+            })
             }
         //verify password
         const isPasswordValid= await bcrypt.compare(password,userFound.password);
         if(!isPasswordValid){
             //throw error
-                return next(appErr("invalid login credentials"));
+            return res.render("users/login",{
+                error:"invalid login credentials",
+            })
             }
            req.session.userAuth=userFound._id;
-        res.json({
-            status:'success',
-            data:userFound,
-        });
+       //redireact
+       res.redirect("/")
     }
 
     catch(error){
@@ -70,13 +75,15 @@ const userDetailsCtrl=async(req,res)=>{
         const userId=req.params.id;
         //find the user
         const user=await User.findById(userId)
-        res.json({
-            status:'success',
-            data:user,
-        });
+        res.render("users/updateUser",{
+          user,  
+          error:"",
+        })
 
     }catch(error){
-        res.json(error);
+        res.render("users/updateUser",{ 
+            error:error.message,
+          })
     }
 }
 
@@ -85,27 +92,28 @@ const profileCtrl=async(req,res)=>{
         //get the login user
         const userID=req.session.userAuth;
         //find the user
-        const user=await User.findById(userID).populate("posts").populate("comments");
-        res.json({
-            status:'success',
-            data:user,
-        });
-
+        const user=await User.findById(userID).populate("posts").populate("comments").populate("requests")
+        res.render("users/profile",{ user })
     }catch(error){
         res.json(error);
     }
 }
 
 const uploadProfileImgCtrl=async(req,res)=>{
-    console.log(req.file.path)
          try{
-    
+            if(!req.file){
+                return res.render("users/uploadProfilePhoto",{
+                    error:"please uplaod image",
+                });
+            } 
             // 1. Find the user to be updated
             const userId = req.session.userAuth;
             const userFound = await User.findById(userId);
             //2. check if user is found
             if (!userFound) {
-              return next(appErr("User not found", 403));
+                return res.render("users/uploadProfilePhoto",{
+                    error:"user not found",
+                });
             }
             //5.Update profile photo
             const userUpdated = await User.findByIdAndUpdate(
@@ -117,12 +125,12 @@ const uploadProfileImgCtrl=async(req,res)=>{
                 new: true,
               }
             );
-            res.json({
-              status: "success",
-              data: userUpdated,
-            });
+            //redireact
+            res.redirect("/api/v1/users/profile-page")
           } catch (error) {
-            next(appErr(error.message));
+            return res.render("users/uploadProfilePhoto",{
+                error:error.message,
+            });
           }
         };
 
@@ -146,36 +154,43 @@ const updatePasswordCtrl=async(req,res,next)=>{
             const salt = await bcrypt.genSalt(10);
             const hashedPassword=await bcrypt.hash(password,salt);
              //update user password
-            await User.findByIdAndUpdate(req.params.id,{
+            await User.findByIdAndUpdate(req.session.userAuth,{
             password:hashedPassword,
         },
         {
             new:true,
         })
-        res.json({
-            status:'success',
-            user:"password is updated successfully"
-        });
-
+        res.redirect("/api/v1/users/profile-page")
         }      
 
     }catch(error){
-        return next(appErr("please required password field"))
+        return res.render("users/updatePassword",{
+            error:error.message,
+        });
     }
 }
 
 const updateUserCtrl=async(req,res,next)=>{
     const {fullname,email,}=req.body;
     try{
+        if(!fullname || !email){
+            return res.render("users/updateUser",{
+                error:"please provide details",
+                user:"",
+            });  
+        }
         if(email){
         const emailTaken=await User.findOne({email});
         if(emailTaken){
-            return next(appErr("email is taken",400))
+            return res.render("users/updateUser",{
+                error:"email is taken",
+                user:"",
+            });
         }
     }
 
     //update user
-    const user=await User.findByIdAndUpdate(req.params.id,
+    await User.findByIdAndUpdate(req.session.userAuth,
     {
         fullname,
         email,
@@ -183,25 +198,20 @@ const updateUserCtrl=async(req,res,next)=>{
     { 
         new: true,
     })
-        res.json({
-            status:'success',
-            data:user,
-        });
-
+    res.redirect("/api/v1/users/profile-page")
     }catch(error){
-        return next(appErr(error.message))
+        return res.render("users/updateUser",{
+            error:error.message,
+            user:'',
+        });
     }
 }
 const logoutCtrl=async(req,res)=>{
-    try{
-        res.json({
-            status:'success',
-            user:"user logout"
-        });
-
-    }catch(error){
-        res.json(error);
-    }
+        //destroy session
+        req.session.destroy(()=>{
+            res.redirect("/api/v1/users/login");
+        })
+  
 }
 
 

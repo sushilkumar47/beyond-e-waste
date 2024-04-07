@@ -7,11 +7,11 @@ const createPostCtrl=async(req,res,next)=>{
     const{title,description,category,user}=req.body;
     try{
         if(!title || !description || !category){
-            return next(appErr("all fields are required"));
+            return res.render("posts/addPost",{error:"all fields are required"})
         }
         //find the user
         const userId=req.session.userAuth;
-        const userFound=await User.findById(userId);
+        const userForeund=await User.findById(userId);
 
         //create post
         const postCreated=await Post.create({
@@ -26,19 +26,18 @@ const createPostCtrl=async(req,res,next)=>{
         userFound.posts.push(postCreated._id);
         //save user
         await  userFound.save();
-        res.json({
-            status:'success',
-            data:postCreated
-        });
+       //redireact
+       res.redirect("/")
 
     }catch(error){
-        return next(appErr(error.message));
+        return res.render("posts/addPost",{error:error.message})
+
     }
 }
 
 const fetchPostsCtrl=async(req,res,next)=>{
     try{
-        const posts=await Post.find().populate("comments");
+        const posts=await Post.find().populate("comments").populate("user")
         res.json({
             status:'success',
             data:posts
@@ -54,11 +53,16 @@ const fetchPostCtrl=async(req,res,next)=>{
         //get the id from params
         const id=req.params.id
         //find the post
-        const post=await Post.findById(id).populate("comments");
-        res.json({
-            status:'success',
-            data:post
-        });
+        const post=await Post.findById(id).populate({
+            path: "comments",
+            populate:{
+               path:"user",
+            },
+        }).populate("user")
+        res.render("posts/postDetails",{
+            post,
+            error:"",
+        })
 
     }catch(error){
         return next(appErr(error.message));
@@ -71,18 +75,22 @@ const deletePostCtrl=async(req,res,next)=>{
         const post=await Post.findById(req.params.id)
         //check if the post belong to the user
         if (post.user.toString() != req.session.userAuth.toString()) {
-            return next(appErr("you are not allowed to delete this post",403))
+            return res.render("posts/postDetails",{
+                error:"you are not allowed to delete this post",
+                post,
+            })
             };
         //delete post
         await Post.findByIdAndDelete(req.params.id);
 
-        res.json({
-            status:'success',
-            data:"post has been deleted successfully",
-        });
+        // redireact
+        res.redirect("/")
 
     }catch(error){
-       return next(appErr(error.message));
+        return res.render("posts/postDetails",{
+            error:error.message,
+            post:"",
+        })
     }
 }
 
@@ -95,7 +103,10 @@ const updatePostCtrl=async(req,res,next)=>{
         const post=await Post.findById(req.params.id)
         //check if the post belong to the user
         if (post.user.toString() !== req.session.userAuth.toString()) {
-            return next(appErr("you are not allowed to update this post",403))
+            return res.render("posts/updatePost",{
+                post:"",
+                error:"you are not allowed to update this post",
+            })
             };
             //post updated
             const Updated=await Post.findByIdAndUpdate(
@@ -110,13 +121,13 @@ const updatePostCtrl=async(req,res,next)=>{
                 new: true,
             }
             );
-        res.json({
-            status:'success',
-            data:Updated,
-        });
+        res.redirect("/")
 
     }catch(error){
-        return next(appErr(error.message));
+        return res.render("posts/updatePost",{
+            post:"",
+            error:error.message,
+        })
     }
 }
 

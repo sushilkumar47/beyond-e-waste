@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Waste Collection Details</title>
+    <script
+    src="https://kit.fontawesome.com/62a5379f96.js"
+    crossorigin="anonymous"
+  ></script>
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/profile.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+    <%-include("../partials/navbar.ejs")%>
+   <div>
+    <%if(requests?.length<=0){%>
+      <h2 class='no-request'>no-request</h2>
+    <%}else{%>
+    
+      <%requests?.forEach((request)=>{%>
+        <div class="personal-container">
+          <div class="details-wrapper">
+            <div class="details">
+              <i class="fas fa-user"></i>
+              <p>Name: <%=request?.email%></p>
+            </div>
+            <div class="details">
+              <i class="fas fa-envelope"></i>
+              <p>Email: <%=request?.phone%></p>
+            </div>
+            <!-- date joined -->
+            <div class="details">
+              <i class="fas fa-calendar"></i>
+              <p>Date Joined:  <%=request?.items%></p>
+            </div>
+          </div>
+        </div>
+        </div>
+        <%})%>
+    
+    <%}%>
+    <%-include("../partials/footer.ejs")%>
+</body>
+</html>

@@ -5,7 +5,7 @@ const protected=(req,res,next)=>{
         next()
     }
     else{
-        next(appErr("Not authorized,login again"))
+       res.render("users/notAuthorize")
     }
 
 }

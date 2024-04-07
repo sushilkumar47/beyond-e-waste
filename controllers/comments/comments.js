@@ -21,10 +21,7 @@ const createCommentCtrl=async(req,res,next)=>{
         //save
         await post.save({validateBeforeSave:false})
         await user.save({validateBeforeSave:false})
-        res.json({
-            status:'success',
-            data: comment 
-        });
+        res.redirect(`/api/v1/posts/${post._id}`);
 
     }catch(error){
         next(appErr(error));
@@ -56,21 +53,18 @@ const detailsCommentCtrl=async(req,res)=>{
     }
 }
 
-const deleteCommentCtrl=async(req,res)=>{
+const deleteCommentCtrl=async(req,res,next)=>{
     try{
          //find post
          const comment=await Comment.findById(req.params.id)
          //check if the post belong to the user
-         if (comment.user.toString() != req.session.userAuth.toString()) {
+         if (comment.user.toString() !== req.session.userAuth.toString()) {
              return next(appErr("you are not allowed to delete this comment",403))
              };
          //delete post
          await Comment.findByIdAndDelete(req.params.id);
  
-         res.json({
-             status:'success',
-             data:"comment has been deleted successfully",
-         });
+         res.redirect(`/api/v1/posts/${req.query.postId}`);
 
     }catch(error){
         res.json(error);

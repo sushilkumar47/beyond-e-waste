@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
     },
     posts:[{type:mongoose.Schema.Types.ObjectId,ref:"Post"}],
     comments:[{type:mongoose.Schema.Types.ObjectId,ref:'Comment'}],
+    requests:[{type:mongoose.Schema.Types.ObjectId,ref:'Request'}],
     },
     {
         timestamps:true,

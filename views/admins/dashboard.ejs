@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <style>
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+table {
+  width: 80%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+}
+
+table th, table td {
+  border: 1px solid #383535;
+  padding: 8px;
+  text-align: center;
+  
+}
+
+table th {
+  background-color: #4dc042;
+}
+
+table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+  </style>
+</head>
+<body>
+    <nav>
+        <div style="color:#ffbe0b;font-size:30px; margin-left: 15px;">
+          <!-- <img src="./images/logo.png" alt="logo" /> -->
+          Beyond<span style="color:rgb(7, 131, 7);font-size:25px;">-E-Waste</span> 
+        </div>
+        <ul>
+          <%if(userAuth){%>
+             <li>
+              <button style="background-color: #ffbe0b; width: 80px; height: 40px; border-radius: 10px;"><a style="color:rgb(7, 0, 141); text-decoration: none; " href="/admins/logout" class="create-post-btn">Logout</a></button>
+            </>
+          <%}else{%>
+            <li>
+              <a href="/admins/login">Login</a>
+            </li>
+            <li>
+              <a href="/admins/register">Register</a>
+            </li>
+          <%}%>
+        </ul>
+      </nav>
+      
+  <h1>Welcome to the Admin Dashboard</h1>
+  <div class="table-container">
+  <table >
+    <thead>
+      <tr>
+        <th>Sr.No</th>
+        <th>User Details </th>
+        <th>Items Details</th>
+        <th>Address</th>
+        <th>collection Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% var counter = 4101; %>
+    <% users.forEach(user => { %>
+          <% user.requests.forEach(request => { %>
+            <tr>
+              <td>R<%= counter++ %></td>
+              <td><%= user.fullname %>,<br><br><%= user.email %>,<br><br><%= request.phone %></td>
+              <td><%= request.items %>,<br><br><%= request.weight %></td>
+              <td><%= request.address %>,<br><br><%= request.pincode %></td>
+              <td><%= request.date %></td>
+              <td style="color: #21b865;"><%= request.status %> <br><br>
+                <form action="/admins/dashboard/<%=request._id%>"" method="POST">
+                  <select  value="<%=request.status%> "name="status" id="status">
+                  <option value="process" selected>process</option>
+                  <option value="completed">completed</option>
+                  <option value="canceled">canceled</option>
+                  <!-- Add more status options as needed -->
+                </select>
+                <button type="submit" class="btn">update</button>
+              </form>
+              </td>
+            </tr>
+            <% }); %>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

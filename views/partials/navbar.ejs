@@ -1,23 +1,35 @@
 <nav>
-    <div>
-      <img src="./images/logo.png" alt="logo" />
-    </div>
-
-    <ul>
+  <div style="color:#ffbe0b;font-size:30px; margin-left: 15px;">
+    <!-- <img src="./images/logo.png" alt="logo" /> -->
+    Beyond<span style="color:rgb(7, 131, 7);font-size:25px;">-E-Waste</span> 
+  </div>
+  <ul>
+    <%if(userAuth){%>
       <li>
-        <a href="#">Home</a>
+        <a href="/">Home</a>
       </li>
       <li>
-        <a href="#">Posts</a>
+        <a href="/api/v1/request/request">Schedule Request</a>
       </li>
       <li>
-        <a href="#">Login</a>
+        <a href="/api/v1/users/profile-page">Profile</a>
       </li>
       <li>
-        <a href="#">Register</a>
+        <a href="/api/v1/posts/get-post-form" class="create-post-btn">New Post</a>
       </li>
       <li>
-        <a href="#" class="create-post-btn">New Post</a>
+        <a style="color:yellow" href="/api/v1/users/logout" class="create-post-btn">Logout</a>
       </li>
-    </ul>
-  </nav>
+    <%}else{%>
+      <li>
+        <a href="/">Home</a>
+      </li>
+      <li>
+        <a href="/api/v1/users/login">Login</a>
+      </li>
+      <li>
+        <a href="/api/v1/users/register">Register</a>
+      </li>
+    <%}%>
+  </ul>
+</nav>

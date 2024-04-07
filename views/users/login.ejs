@@ -6,27 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Fontawesome -->
     <script
-      src="https://kit.fontawesome.com/42a182743f.js"
+      src="https://kit.fontawesome.com/62a5379f96.js"
       crossorigin="anonymous"
     ></script>
     <!-- CSS -->
     <link rel="stylesheet" href="/css/form.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/uploadPhoto.css" />
     <title>Login</title>
   </head>
   <body>
-    <%- include('../partials/'); %>
+    <%-include("../partials/navbar.ejs")%>
     <div class="form-container">
-      <!-- icon -->
       <h1>Login Into Your Account</h1>
       <p>
-        <!-- lock icon -->
         <i class="fas fa-lock"></i>
       </p>
-      <small class="error">
-        <i class="fas fa-exclamation-circle"></i>
-        Invalid Credentials
-      </small>
-      <form action="/login" method="POST">
+      <%if(error){%>
+        <small class="error">
+        <small class="error">
+          <i class="fas fa-exclamation-circle"></i>
+          <%=error%>
+        </small> 
+      <%}%>
+      <form action="/api/v1/users/login" method="POST">
         <label for="email">Email</label>
         <input type="email" name="email" id="email" />
 
@@ -35,8 +38,9 @@
 
         <button type="submit">Login</button>
 
-        <p>Don't have an account? <a href="/register">Register</a></p>
+        <p>Don't have an account? <a href="/api/v1/users/register">Register</a></p>
       </form>
     </div>
+    <%-include("../partials/footer.ejs")%>
   </body>
 </html>
